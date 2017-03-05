@@ -70,6 +70,8 @@ arch-chroot /mnt pacman -S --noconfirm \
 	openssh \
 	gnome \
 	gnome-tweak-tool \
+	gedit \
+  file-roller \
 	adobe-source-code-pro-fonts \
 	atom \
 	cups \
