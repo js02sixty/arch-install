@@ -68,11 +68,13 @@ arch-chroot /mnt pacman -S --noconfirm \
 	xorg-server \
 	firefox \
 	openssh \
+	xf86-video-ati \
 	gnome \
 	gnome-tweak-tool \
 	gedit \
-  file-roller \
+	file-roller \
 	adobe-source-code-pro-fonts \
+	node-js \
 	atom \
 	cups \
 	git \
