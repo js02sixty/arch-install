@@ -4,8 +4,15 @@ echo "Enter username"
 read newuser
 echo "Enter password"
 read newpw
+echo "Enter root password"
+read rpw
 echo "Enter hostname"
 read hname
+
+ml=/etc/pacman.d/mirrorlist
+mv $ml $ml.bak
+curl -o $ml "https://www.archlinux.org/mirrorlist/?country=US&protocol=http&ip_version=4"
+sed -i 's/^#\(.*\)/\1/g' $ml
 
 timedatectl set-ntp true
 
@@ -18,22 +25,21 @@ parted --script /dev/sda set 2 lvm on
 pvcreate /dev/sda2
 vgcreate vg_os /dev/sda2
 lvcreate vg_os -n lv_swap -L 4G
-lvcreate vg_os -n lv_root -l 100%FREE
-#lvcreate vg_os -n lv_home -l 100%FREE
+lvcreate vg_os -n lv_root -L 80G
+lvcreate vg_os -n lv_home -l 100%FREE
 
 mkswap /dev/vg_os/lv_swap
 swapon /dev/vg_os/lv_swap
 
 mkfs.vfat -F32 /dev/sda1
 mkfs.ext4 /dev/vg_os/lv_root
-mkfs.ext4 /dev/vg_os/lv_home
-mkfs.xfs /dev/sdb
+mkfs.xfs /dev/vg_os/lv_home
 
 mount /dev/vg_os/lv_root /mnt
 mkdir -p /mnt/boot
 mount /dev/sda1 /mnt/boot
 mkdir -p /mnt/home
-mount /dev/sdb /mnt/home
+mount /dev/vg_os/lv_home /mnt/home
 
 pacstrap -i /mnt base base-devel
 
@@ -48,18 +54,17 @@ arch-chroot /mnt ln -sf /usr/share/zoneinfo/US/Eastern /etc/localtime
 arch-chroot /mnt hwclock --systohc --utc
 arch-chroot /mnt mkinitcpio -p linux
 arch-chroot /mnt pacman -S --noconfirm \
+	zsh \
 	dosfstools \
-	virtualbox-guest-modules \
-	virtualbox-guest-utils \
+	# virtualbox-guest-modules \
+	# virtualbox-guest-utils \
 	networkmanager \
 	vim \
 	xorg-server \
-	xorg-server-utils \
-	xorg-xinit \
-	rxvt-unicode \
-	urxvt-perls \
-#	plasma-meta \
-	firefox
+	firefox \
+	openssh \
+	gnome \
+	gnome-tweak-tool
 
 arch-chroot /mnt bootctl --path=/boot install
 
@@ -69,17 +74,15 @@ echo "linux          /vmlinuz-linux" >> $bentry
 echo "initrd         /initramfs-linux.img" >> $bentry
 echo "options        root=/dev/vg_os/lv_root rw" >> $bentry
 
-ldrcfg=/mnt/boot/loader/loader.conf
-echo "timeout 1" >> $ldrcfg
-echo "default arch">> $ldrcfg
+# ldrcfg=/mnt/boot/loader/loader.conf
+# echo "timeout 1" >> $ldrcfg
+# echo "default arch">> $ldrcfg
 
-#arch-chroot /mnt timedatectl set-ntp true
 arch-chroot /mnt timedatectl set-timezone America/New_York
-arch-chroot /mnt systemctl enable NetworkManager
+arch-chroot /mnt systemctl enable NetworkManager gdm
 arch-chroot /mnt useradd -m -G wheel -s /bin/bash $newuser
 arch-chroot /mnt echo $newname:$newpw | chpasswd
-arch-chroot /mnt echo root:Security#321 | chpasswd
+arch-chroot /mnt echo root:$rpw | chpasswd
 sed '/^# %wheel ALL=(ALL) NOPASSWD: ALL/s/^#//' -i /mnt/etc/sudoers
 
 #reboot
-
