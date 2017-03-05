@@ -53,7 +53,6 @@ echo en_US.UTF-8 UTF-8 >> /mnt/etc/locale.gen
 echo LANG=en_US.UTF-8 > /mnt/etc/locale.conf
 sed '/^HOOKS/s/block/block lvm2/' -i /mnt/etc/mkinitcpio.conf
 echo $hname > /mnt/etc/hostname
-
 arch-chroot /mnt locale-gen
 arch-chroot /mnt ln -sf /usr/share/zoneinfo/US/Eastern /etc/localtime
 arch-chroot /mnt hwclock --systohc --utc
@@ -96,7 +95,7 @@ echo "options        root=/dev/vg_os/lv_root rw" >> $bentry
 
 arch-chroot /mnt timedatectl set-timezone America/New_York
 arch-chroot /mnt systemctl enable NetworkManager gdm
-arch-chroot /mnt useradd -m -G wheel -s /bin/bash $newuser
+arch-chroot /mnt useradd -m -G wheel -s /bin/zsh $newuser
 arch-chroot /mnt echo $newname:$newpw | chpasswd
 arch-chroot /mnt echo root:$rpw | chpasswd
 sed '/^# %wheel ALL=(ALL) NOPASSWD: ALL/s/^#//' -i /mnt/etc/sudoers
