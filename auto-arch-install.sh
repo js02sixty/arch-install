@@ -2,8 +2,8 @@
 
 echo "Enter username"
 read newuser
-echo "Enter password"
-read newpw
+# echo "Enter password"
+# read newpw
 echo "Enter root password"
 read rpw
 echo "Enter hostname"
@@ -72,7 +72,7 @@ arch-chroot /mnt pacman -S --noconfirm \
 	gedit \
 	file-roller \
 	adobe-source-code-pro-fonts \
-	node-js \
+	nodejs \
 	atom \
 	cups \
 	git \
@@ -97,7 +97,7 @@ echo "options        root=/dev/vg_os/lv_root rw" >> $bentry
 
 arch-chroot /mnt systemctl enable NetworkManager gdm
 arch-chroot /mnt useradd -m -G wheel -s /bin/zsh $newuser
-arch-chroot /mnt echo $newname:$newpw | chpasswd
+#arch-chroot /mnt echo $newuser:$newpw | chpasswd
 arch-chroot /mnt echo root:$rpw | chpasswd
 sed '/^# %wheel ALL=(ALL) NOPASSWD: ALL/s/^#//' -i /mnt/etc/sudoers
 
