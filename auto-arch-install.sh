@@ -15,11 +15,12 @@ curl -o $ml "https://www.archlinux.org/mirrorlist/?country=US&protocol=http&ip_v
 sed -i 's/^#\(.*\)/\1/g' $ml
 
 timedatectl set-ntp true
+timedatectl set-timezone America/New_York
 
-for v_partition in $(parted -s /dev/sda print|awk '/^ / {print $1}')
-do
-   parted -s /dev/sda rm ${v_partition}
-done
+# for v_partition in $(parted -s /dev/sda print|awk '/^ / {print $1}')
+# do
+#    parted -s /dev/sda rm ${v_partition}
+# done
 
 parted --script /dev/sda mklabel gpt
 parted --script /dev/sda mkpart ESP fat32 1MiB 513MiB
@@ -60,8 +61,6 @@ arch-chroot /mnt mkinitcpio -p linux
 arch-chroot /mnt pacman -S --noconfirm \
 	zsh \
 	dosfstools \
-	# virtualbox-guest-modules \
-	# virtualbox-guest-utils \
 	networkmanager \
 	vim \
 	xorg-server \
@@ -78,6 +77,9 @@ arch-chroot /mnt pacman -S --noconfirm \
 	cups \
 	git \
 	go
+	
+# virtualbox-guest-modules
+# virtualbox-guest-utils
 
 
 
@@ -93,7 +95,6 @@ echo "options        root=/dev/vg_os/lv_root rw" >> $bentry
 # echo "timeout 1" >> $ldrcfg
 # echo "default arch">> $ldrcfg
 
-arch-chroot /mnt timedatectl set-timezone America/New_York
 arch-chroot /mnt systemctl enable NetworkManager gdm
 arch-chroot /mnt useradd -m -G wheel -s /bin/zsh $newuser
 arch-chroot /mnt echo $newname:$newpw | chpasswd
