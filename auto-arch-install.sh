@@ -16,6 +16,11 @@ sed -i 's/^#\(.*\)/\1/g' $ml
 
 timedatectl set-ntp true
 
+for v_partition in $(parted -s /dev/sda print|awk '/^ / {print $1}')
+do
+   parted -s /dev/sda rm ${v_partition}
+done
+
 parted --script /dev/sda mklabel gpt
 parted --script /dev/sda mkpart ESP fat32 1MiB 513MiB
 parted --script /dev/sda set 1 boot on
@@ -64,7 +69,14 @@ arch-chroot /mnt pacman -S --noconfirm \
 	firefox \
 	openssh \
 	gnome \
-	gnome-tweak-tool
+	gnome-tweak-tool \
+	adobe-source-code-pro-fonts \
+	atom \
+	cups \
+	git \
+	go
+
+
 
 arch-chroot /mnt bootctl --path=/boot install
 
