@@ -106,4 +106,6 @@ arch-chroot /mnt useradd -m -G wheel -s /bin/zsh $newuser
 arch-chroot /mnt echo root:$rpw | chpasswd
 sed '/^# %wheel ALL=(ALL) NOPASSWD: ALL/s/^#//' -i /mnt/etc/sudoers
 
+arch-chroot /mnt grub-install --target=x86_64-efi --efi-directory=/boot/efi --bootloader-id=ARCH
+arch-chroot /mnt grub-mkconfig -o /boot/grub/grub.cfg
 #reboot
