@@ -31,7 +31,7 @@ parted --script /dev/sda set 2 lvm on
 pvcreate /dev/sda2
 vgcreate vg_os /dev/sda2
 lvcreate vg_os -n lv_swap -L 4G
-lvcreate vg_os -n lv_root -L 80G
+lvcreate vg_os -n lv_root -L 60G
 lvcreate vg_os -n lv_home -l 100%FREE
 
 mkswap /dev/vg_os/lv_swap
@@ -39,17 +39,22 @@ swapon /dev/vg_os/lv_swap
 
 mkfs.vfat -F32 /dev/sda1
 mkfs.ext4 /dev/vg_os/lv_root
-mkfs.xfs /dev/vg_os/lv_home
+mkfs.ext4 /dev/vg_os/lv_home
 
 mount /dev/vg_os/lv_root /mnt
-mkdir -p /mnt/boot
-mount /dev/sda1 /mnt/boot
+mkdir -p /mnt/boot/efi
+mount /dev/sda1 /mnt/boot/efi
 mkdir -p /mnt/home
 mount /dev/vg_os/lv_home /mnt/home
 
-pacstrap -i /mnt base base-devel
+pacstrap -i /mnt base base-devel \
+	grub efibootmgr \
+	gnome \
+	zsh \
+	vim \
+	firefox
 
-genfstab -U /mnt > /mnt/etc/fstab
+genfstab -U /mnt >> /mnt/etc/fstab
 echo en_US.UTF-8 UTF-8 >> /mnt/etc/locale.gen
 echo LANG=en_US.UTF-8 > /mnt/etc/locale.conf
 sed '/^HOOKS/s/block/block lvm2/' -i /mnt/etc/mkinitcpio.conf
@@ -58,38 +63,38 @@ arch-chroot /mnt locale-gen
 arch-chroot /mnt ln -sf /usr/share/zoneinfo/US/Eastern /etc/localtime
 arch-chroot /mnt hwclock --systohc --utc
 arch-chroot /mnt mkinitcpio -p linux
-arch-chroot /mnt pacman -S --noconfirm \
-	zsh \
-	dosfstools \
-	networkmanager \
-	vim \
-	xorg-server \
-	firefox \
-	openssh \
-	xf86-video-ati \
-	gnome \
-	gnome-tweak-tool \
-	gedit \
-	file-roller \
-	adobe-source-code-pro-fonts \
-	nodejs \
-	atom \
-	cups \
-	git \
-	go
+#arch-chroot /mnt pacman -S --noconfirm \
+#	zsh \
+#	dosfstools \
+#	networkmanager \
+#	vim \
+#	xorg-server \
+#	firefox \
+#	openssh \
+#	xf86-video-ati \
+#	gnome \
+#	gnome-tweak-tool \
+#	gedit \
+#	file-roller \
+#	adobe-source-code-pro-fonts \
+#	nodejs \
+#	atom \
+#	cups \
+#	git \
+#	go
 	
 # virtualbox-guest-modules
 # virtualbox-guest-utils
 
 
 
-arch-chroot /mnt bootctl --path=/boot install
+#arch-chroot /mnt bootctl --path=/boot install
 
-bentry=/mnt/boot/loader/entries/arch.conf
-echo "title          Arch Linux" >> $bentry
-echo "linux          /vmlinuz-linux" >> $bentry
-echo "initrd         /initramfs-linux.img" >> $bentry
-echo "options        root=/dev/vg_os/lv_root rw" >> $bentry
+#bentry=/mnt/boot/loader/entries/arch.conf
+#echo "title          Arch Linux" >> $bentry
+#echo "linux          /vmlinuz-linux" >> $bentry
+#echo "initrd         /initramfs-linux.img" >> $bentry
+#echo "options        root=/dev/vg_os/lv_root rw" >> $bentry
 
 # ldrcfg=/mnt/boot/loader/loader.conf
 # echo "timeout 1" >> $ldrcfg
