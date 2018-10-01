@@ -49,9 +49,11 @@ mount /dev/vg_os/lv_home /mnt/home
 
 pacstrap -i /mnt base base-devel \
 	grub efibootmgr \
-	gnome \
 	zsh \
 	vim \
+	xorg-server \
+	plasma-wayland-session \
+	plasma-meta \
 	firefox
 
 genfstab -U /mnt >> /mnt/etc/fstab
@@ -100,12 +102,12 @@ arch-chroot /mnt mkinitcpio -p linux
 # echo "timeout 1" >> $ldrcfg
 # echo "default arch">> $ldrcfg
 
-arch-chroot /mnt systemctl enable NetworkManager gdm
+arch-chroot /mnt systemctl enable NetworkManager
 arch-chroot /mnt useradd -m -G wheel -s /bin/zsh $newuser
 #arch-chroot /mnt echo $newuser:$newpw | chpasswd
 arch-chroot /mnt echo root:$rpw | chpasswd
 sed '/^# %wheel ALL=(ALL) NOPASSWD: ALL/s/^#//' -i /mnt/etc/sudoers
 
-arch-chroot /mnt grub-install --target=x86_64-efi --efi-directory=/boot/efi --bootloader-id=ARCH
+arch-chroot /mnt grub-install --target=x86_64-efi --efi-directory=/boot/efi --bootloader-id=GRUB
 arch-chroot /mnt grub-mkconfig -o /boot/grub/grub.cfg
 #reboot
