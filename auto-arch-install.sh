@@ -61,13 +61,13 @@ mount /dev/vg_os/lv_home /mnt/home
 ## Install Distro
 pacstrap -i /mnt \
 	base \
-	base-devel \
+	#base-devel \
 	grub efibootmgr \
 	networkmanager
 	zsh \
-	vim \
-	xorg-server \
-	firefox
+	#vim \
+	#xorg-server \
+	#firefox
 	
 ## Set Time
 arch-chroot /mnt ln -sf /usr/share/zoneinfo/America/New_York /etc/localtime
