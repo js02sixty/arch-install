@@ -63,12 +63,12 @@ pacstrap /mnt \
 	base \
 	base-devel \
 	grub efibootmgr dosfstools \
-	networkmanager
+	networkmanager \
+	firewalld \
 	zsh \
 	vim git \
 	openssh \
-	xorg-server \
-	gnome gnome-extra
+	gnome gnome-extra \
 	firefox
 	
 ## Set Time
@@ -92,6 +92,8 @@ arch-chroot /mnt mkinitcpio -p linux
 ## Enable Services
 arch-chroot /mnt systemctl enable NetworkManager
 arch-chroot /mnt systemctl enable gdm
+arch-chroot /mnt systemctl enable firewalld
+arch-chroot /mnt systemctl enable sshd
 
 ## Set Permissions
 arch-chroot /mnt useradd -m -G wheel -s /bin/zsh $newuser
@@ -101,7 +103,7 @@ sed '/^# %wheel ALL=(ALL) NOPASSWD: ALL/ s/^#//' -i /mnt/etc/sudoers
 
 ## Boot Loader
 sed 's/GRUB_TIMEOUT=5/GRUB_TIMEOUT=2/' -i /mnt/etc/default
-sed 's/part_gpt part_msdos/part_gpt part_msdos lvm/' -i /mnt/etc/default
+sed 's/part_msdos/part_msdos lvm/' -i /mnt/etc/default
 arch-chroot /mnt grub-install --target=x86_64-efi --efi-directory=/boot --bootloader-id=GRUB
 arch-chroot /mnt grub-mkconfig -o /boot/grub/grub.cfg
 
