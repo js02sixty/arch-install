@@ -41,9 +41,9 @@ parted --script /dev/sda set 2 lvm on
 
 pvcreate /dev/sda2
 vgcreate vg_os /dev/sda2
-lvcreate vg_os -n lv_swap -L 4G -W y
-lvcreate vg_os -n lv_root -L 60G -W y
-lvcreate vg_os -n lv_home -l 100%FREE -W y
+lvcreate vg_os -n lv_swap -L 4G --yes
+lvcreate vg_os -n lv_root -L 60G --yes
+lvcreate vg_os -n lv_home -l 100%FREE --yes
 
 mkswap /dev/vg_os/lv_swap
 swapon /dev/vg_os/lv_swap
@@ -59,7 +59,7 @@ mkdir -p /mnt/home
 mount /dev/vg_os/lv_home /mnt/home
 
 ## Install Distro
-pacstrap -i /mnt \
+pacstrap /mnt \
 	base \
 	#base-devel \
 	grub efibootmgr \
