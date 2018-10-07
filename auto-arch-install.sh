@@ -24,8 +24,8 @@ do
     lvremove ${lvol} --force
 done
 
-vgremove ${vgs | awk 'NR==2 {print $1}'} --force
-pvremove ${pvs | awk 'NR==2 {print $1}'} --force
+vgremove $(vgs | awk 'NR==2 {print $1}') --force
+pvremove $(pvs | awk 'NR==2 {print $1}') --force
 
 for part in $(parted -s /dev/sda print|awk '/^ / {print $1}')
 do
