@@ -61,13 +61,15 @@ mount /dev/vg_os/lv_home /mnt/home
 ## Install Distro
 pacstrap /mnt \
 	base \
-	#base-devel \
-	grub efibootmgr \
+	base-devel \
+	grub efibootmgr dosfstools \
 	networkmanager
 	zsh \
-	#vim \
-	#xorg-server \
-	#firefox
+	vim git \
+	openssh \
+	xorg-server \
+	gnome gnome-extra
+	firefox
 	
 ## Set Time
 arch-chroot /mnt ln -sf /usr/share/zoneinfo/America/New_York /etc/localtime
@@ -84,46 +86,12 @@ sed '/^HOOKS/s/block/block lvm2/' -i /mnt/etc/mkinitcpio.conf
 echo $hname > /mnt/etc/hostname
 arch-chroot /mnt mkinitcpio -p linux
 
-#arch-chroot /mnt pacman -S --noconfirm \
-#	zsh \
-#	dosfstools \
-#	networkmanager \
-#	vim \
-#	xorg-server \
-#	firefox \
-#	openssh \
-#	xf86-video-ati \
-#	gnome \
-#	gnome-tweak-tool \
-#	gedit \
-#	file-roller \
-#	adobe-source-code-pro-fonts \
-#	nodejs \
-#	atom \
-#	cups \
-#	git \
-#	go
-	
 # virtualbox-guest-modules
 # virtualbox-guest-utils
 
-
-
-#arch-chroot /mnt bootctl --path=/boot install
-
-#bentry=/mnt/boot/loader/entries/arch.conf
-#echo "title          Arch Linux" >> $bentry
-#echo "linux          /vmlinuz-linux" >> $bentry
-#echo "initrd         /initramfs-linux.img" >> $bentry
-#echo "options        root=/dev/vg_os/lv_root rw" >> $bentry
-
-# ldrcfg=/mnt/boot/loader/loader.conf
-# echo "timeout 1" >> $ldrcfg
-# echo "default arch">> $ldrcfg
-
 ## Enable Services
 arch-chroot /mnt systemctl enable NetworkManager
-#arch-chroot /mnt systemctl enable gdm
+arch-chroot /mnt systemctl enable gdm
 
 ## Set Permissions
 arch-chroot /mnt useradd -m -G wheel -s /bin/zsh $newuser
@@ -138,4 +106,3 @@ arch-chroot /mnt grub-install --target=x86_64-efi --efi-directory=/boot --bootlo
 arch-chroot /mnt grub-mkconfig -o /boot/grub/grub.cfg
 
 reboot
-
