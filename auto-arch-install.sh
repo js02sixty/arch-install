@@ -102,7 +102,7 @@ arch-chroot /mnt echo root:$rpw | chpasswd
 sed '/^# %wheel ALL=(ALL) NOPASSWD: ALL/ s/^#//' -i /mnt/etc/sudoers
 
 ## Boot Loader
-sed 's/GRUB_TIMEOUT=5/GRUB_TIMEOUT=2/' -i /mnt/etc/default
+sed 's/GRUB_TIMEOUT\=5/GRUB_TIMEOUT\=2/' -i /mnt/etc/default
 sed 's/part_msdos/part_msdos lvm/' -i /mnt/etc/default
 arch-chroot /mnt grub-install --target=x86_64-efi --efi-directory=/boot --bootloader-id=GRUB
 arch-chroot /mnt grub-mkconfig -o /boot/grub/grub.cfg
