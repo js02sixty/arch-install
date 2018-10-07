@@ -19,11 +19,11 @@ curl -o $ml "https://www.archlinux.org/mirrorlist/?country=US&protocol=http&ip_v
 sed -i 's/^#\(.*\)/\1/g' $ml
 
 ## Remove old paritions
-for lvol in $(lvs|awk 'NR > 1 {print $1}')
-do
-    lvremove ${lvol} --force
-done
-
+#for lvol in $(lvs|awk 'NR > 1 {print $1}')
+#do
+#    lvremove ${lvol} --force
+#done
+lvremove $(vgs | awk 'NR==2 {print $1}') --force
 vgremove $(vgs | awk 'NR==2 {print $1}') --force
 pvremove $(pvs | awk 'NR==2 {print $1}') --force
 
