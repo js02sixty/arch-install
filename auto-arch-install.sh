@@ -50,7 +50,7 @@ swapon /dev/vg_os/lv_swap
 
 mkfs.vfat -F32 /dev/sda1
 mkfs.ext4 /dev/vg_os/lv_root
-mkfs.ext4 /dev/vg_os/lv_home
+mkfs.xfs /dev/vg_os/lv_home
 
 mount /dev/vg_os/lv_root /mnt
 mkdir -p /mnt/boot
@@ -60,7 +60,7 @@ mount /dev/vg_os/lv_home /mnt/home
 
 ## Install Distro
 pacstrap /mnt \
-	base \
+	base linux linux-firmware \
 	base-devel \
 	grub efibootmgr dosfstools \
 	networkmanager \
@@ -84,7 +84,7 @@ arch-chroot /mnt locale-gen
 genfstab -U /mnt >> /mnt/etc/fstab
 sed '/^HOOKS/s/block/block lvm2/' -i /mnt/etc/mkinitcpio.conf
 echo $hname > /mnt/etc/hostname
-arch-chroot /mnt mkinitcpio -p linux
+arch-chroot /mnt mkinitcpio -P
 
 # virtualbox-guest-modules
 # virtualbox-guest-utils
@@ -102,9 +102,9 @@ arch-chroot /mnt echo root:$rpw | chpasswd
 sed '/^# %wheel ALL=(ALL) NOPASSWD: ALL/ s/^#//' -i /mnt/etc/sudoers
 
 ## Boot Loader
-sed 's/GRUB_TIMEOUT\=5/GRUB_TIMEOUT\=2/' -i /mnt/etc/default
-sed 's/part_msdos/part_msdos lvm/' -i /mnt/etc/default
+sed 's/GRUB_TIMEOUT\=5/GRUB_TIMEOUT\=2/' -i /mnt/etc/default/grub
+sed 's/part_msdos/part_msdos lvm/' -i /mnt/etc/default/grub
 arch-chroot /mnt grub-install --target=x86_64-efi --efi-directory=/boot --bootloader-id=GRUB
 arch-chroot /mnt grub-mkconfig -o /boot/grub/grub.cfg
 
-reboot
+echo "reboot now"
